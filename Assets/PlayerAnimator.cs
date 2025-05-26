@@ -9,8 +9,8 @@ public class PlayerAnimator : MonoBehaviour
 
     private int xMoveHash;
     private int yMoveHash;
-    private Vector2 moveInput;
     private float animatorSmoothTime = 0.2f;
+    private Vector2 moveInput;
 
     private void Awake()
     {
@@ -20,9 +20,9 @@ public class PlayerAnimator : MonoBehaviour
         yMoveHash = Animator.StringToHash("vertical");
     }
 
-    public void HandleAllAnimator(Vector2 _moveInput)
+    public void HandleAllAnimator()
     {
-        moveInput = _moveInput;
+        moveInput = playerManager.playerNetwork.MoveInput;
         PlayLocomotionAnimation();
     }
 

@@ -10,14 +10,12 @@ public class PlayerLocomotion : MonoBehaviour
     private Rigidbody rb;
     private float moveSpeed = 5f;
 
-    private Camera camera;
     private float rotateSpeed = 15f;
 
     private void Awake()
     {
         playerManager = GetComponent<PlayerManager>();
         rb = GetComponent<Rigidbody>();
-        camera = Camera.main;
     }
 
     public void HandleAllLocomotion()
@@ -34,7 +32,7 @@ public class PlayerLocomotion : MonoBehaviour
 
     public void RotateWithCamera()
     {
-        Quaternion targetRotation = camera.transform.rotation;
+        Quaternion targetRotation = playerManager.playerNetwork.CameraRotation;
         targetRotation.x = targetRotation.z = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed);
     }

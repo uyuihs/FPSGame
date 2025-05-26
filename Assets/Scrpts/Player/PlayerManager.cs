@@ -1,20 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PlayerManager : MonoBehaviour
+using Unity.Netcode;
+public class PlayerManager : NetworkBehaviour
 {
     public PlayerLocomotion playerLocomotion;
     public PlayerInput playerInput;
     public PlayerAnimator playerAnimator;
-
-    public Vector2 moveInput;
+    public PlayerNetwork playerNetwork;
+    public PlayerCamera playerCamera;
 
     private void Awake()
     {
         playerLocomotion = GetComponent<PlayerLocomotion>();
         playerInput = GetComponent<PlayerInput>();
         playerAnimator = GetComponent<PlayerAnimator>();
+        playerNetwork = GetComponent<PlayerNetwork>();
+        playerCamera = GetComponent<PlayerCamera>();
     }
 
     private void Start()
@@ -23,13 +25,37 @@ public class PlayerManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    private void Update()
-    {
-        playerInput.HandleAllInput();
-    }
+
 
     private void FixedUpdate()
-    {   playerAnimator.HandleAllAnimator(playerInput.GetMoveInput());
-        playerLocomotion.HandleAllLocomotion();        
+    {
+        playerAnimator.HandleAllAnimator();
+        playerLocomotion.HandleAllLocomotion();
+        //同步位置
+        if (IsOwner)
+        {
+
+        }
+
     }
+    private void Update()
+    {
+        if (IsOwner)
+        {
+            //处理输入
+            playerInput.HandleAllInput();
+
+            //同步网络变量
+            playerNetwork.AsyncInput(
+                playerInput.MoveInput,
+                playerInput.CameraInput);
+
+        }
+
+    }
+    
+
+   
+
+
 }

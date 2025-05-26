@@ -1,17 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerInput : NetworkBehaviour
 {
     private InputController inputController;
-
+    private Transform cinCameraTransform;
     [Header("Player Input")]
     private float epszero = (float)1e-20;//表示0
     private Vector2 moveInput = Vector2.zero;
+
+    private Vector3 playerPosition;
+
     private bool sprintInput;
     private bool jumpInput;
+
+    private void Awake()
+    {
+        cinCameraTransform = Camera.main.transform;        
+    }
 
     private void OnEnable()
     {
@@ -19,10 +29,12 @@ public class PlayerInput : MonoBehaviour
         {
             inputController = new InputController();
         }
+        
         inputController.PlayerMove.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         inputController.PlayerMove.Sprint.performed += ctx => sprintInput = true;
         inputController.PlayerMove.Sprint.canceled += ctx => sprintInput = false;
         inputController.Enable();
+
     }
 
     public void HandleAllInput()
@@ -43,9 +55,14 @@ public class PlayerInput : MonoBehaviour
         Debug.Log(moveInput);
     }
 
-    public Vector2 GetMoveInput()
+    public Quaternion CameraInput
     {
-        return moveInput;
+        get { return cinCameraTransform.rotation; }
+    }
+
+    public Vector2 MoveInput
+    {
+        get { return moveInput; }
     }
 
 }
