@@ -11,7 +11,7 @@ public class PlayerLocomotion : NetworkBehaviour
     private Transform cameraTransform;
     private float moveSpeed = 5f;
 
-    private float rotateSpeed = 15f;
+    private float dampingTime = 0.2f;
 
     private void Awake()
     {
@@ -21,7 +21,7 @@ public class PlayerLocomotion : NetworkBehaviour
     {
         cameraTransform = playerManager.playerCamera.GetCameraTransform();
     }
-    
+
     public void HandleAllLocomotion()
     {
         //jump
@@ -39,9 +39,7 @@ public class PlayerLocomotion : NetworkBehaviour
 
     public void RotateWithCamera()
     {
-        Quaternion targetRotation = cameraTransform.rotation;
-        Debug.Log(targetRotation);
-        targetRotation.x = targetRotation.z = 0;
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed);
+        float rotateYAxis = cameraTransform.rotation.eulerAngles.y;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, rotateYAxis, 0), dampingTime);
     }
 }
