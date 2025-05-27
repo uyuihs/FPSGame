@@ -1,23 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PlayerLocomotion : MonoBehaviour
+using Unity.Netcode;
+public class PlayerLocomotion : NetworkBehaviour
 {
-    private PlayerManager playerManager;
+    public PlayerManager playerManager;
     private Vector2 moveInput;
 
     private Rigidbody rb;
+    private Transform cameraTransform;
     private float moveSpeed = 5f;
 
     private float rotateSpeed = 15f;
 
     private void Awake()
     {
-        playerManager = GetComponent<PlayerManager>();
         rb = GetComponent<Rigidbody>();
     }
-
+    private void Start()
+    {
+        cameraTransform = playerManager.playerCamera.GetCameraTransform();
+    }
+    
     public void HandleAllLocomotion()
     {
         //jump
@@ -27,12 +31,16 @@ public class PlayerLocomotion : MonoBehaviour
 
     private void OnAnimatorMove()
     {
-        rb.velocity = playerManager.playerAnimator.animator.deltaPosition / Time.fixedDeltaTime;
+        if (IsOwner)
+        {
+            rb.velocity = playerManager.playerAnimator.animator.deltaPosition / Time.fixedDeltaTime;
+        }
     }
 
     public void RotateWithCamera()
     {
-        Quaternion targetRotation = playerManager.playerNetwork.CameraRotation;
+        Quaternion targetRotation = cameraTransform.rotation;
+        Debug.Log(targetRotation);
         targetRotation.x = targetRotation.z = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed);
     }

@@ -7,8 +7,10 @@ using Unity.Netcode;
 
 public class PlayerInput : NetworkBehaviour
 {
+
+    public PlayerManager playerManager;
     private InputController inputController;
-    private Transform cinCameraTransform;
+
     [Header("Player Input")]
     private float epszero = (float)1e-20;//表示0
     private Vector2 moveInput = Vector2.zero;
@@ -17,11 +19,6 @@ public class PlayerInput : NetworkBehaviour
 
     private bool sprintInput;
     private bool jumpInput;
-
-    private void Awake()
-    {
-        cinCameraTransform = Camera.main.transform;        
-    }
 
     private void OnEnable()
     {
@@ -55,11 +52,7 @@ public class PlayerInput : NetworkBehaviour
         Debug.Log(moveInput);
     }
 
-    public Quaternion CameraInput
-    {
-        get { return cinCameraTransform.rotation; }
-    }
-
+ 
     public Vector2 MoveInput
     {
         get { return moveInput; }

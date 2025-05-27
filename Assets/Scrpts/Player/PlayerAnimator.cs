@@ -1,20 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PlayerAnimator : MonoBehaviour
+using Unity.Netcode;
+public class PlayerAnimator : NetworkBehaviour
 {
-    private PlayerManager playerManager;
+    public PlayerManager playerManager;
     public Animator animator;
 
     private int xMoveHash;
     private int yMoveHash;
     private float animatorSmoothTime = 0.2f;
-    private Vector2 moveInput;
 
     private void Awake()
     {
-        playerManager = GetComponent<PlayerManager>();
         animator = GetComponent<Animator>();
         xMoveHash = Animator.StringToHash("horizontal");
         yMoveHash = Animator.StringToHash("vertical");
@@ -22,14 +20,21 @@ public class PlayerAnimator : MonoBehaviour
 
     public void HandleAllAnimator()
     {
-        moveInput = playerManager.playerNetwork.MoveInput;
-        PlayLocomotionAnimation();
+        PlayLocomotionAnimationOnserverRpc();
     }
 
-    private void PlayLocomotionAnimation()
+    [ServerRpc]
+    private void PlayLocomotionAnimationOnserverRpc()
     {
-        animator.SetFloat(xMoveHash, moveInput.x,animatorSmoothTime, Time.deltaTime);
+        PlayLocomotionAnimationOnClientRpc();   
+            
+    }
+
+    [ClientRpc]
+    private void PlayLocomotionAnimationOnClientRpc()
+    {
+        Vector2 moveInput = playerManager.playerNetwork.MoveInput;
+        animator.SetFloat(xMoveHash, moveInput.x, animatorSmoothTime, Time.deltaTime);
         animator.SetFloat(yMoveHash, moveInput.y, animatorSmoothTime, Time.deltaTime);
     }
-
 }

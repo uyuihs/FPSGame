@@ -6,11 +6,12 @@ using Unity.Netcode;
 public class PlayerCamera : NetworkBehaviour
 {
     private CinemachineFreeLook cinCamera;
-    private PlayerManager playerManager;
+    public PlayerManager playerManager;
+    private Camera cam;
     private void Awake()
     {
         cinCamera = FindAnyObjectByType<CinemachineFreeLook>();
-        playerManager = GetComponent<PlayerManager>();
+        cam = Camera.main;
     }
 
 
@@ -19,4 +20,10 @@ public class PlayerCamera : NetworkBehaviour
         cinCamera.LookAt = GetComponentInChildren<LookAt>().transform;
         cinCamera.Follow = transform;
     }
+    
+    public Transform GetCameraTransform()
+    {
+        return cam.transform;
+    }
+
 }

@@ -5,12 +5,8 @@ using Unity.Netcode;
 
 public class PlayerSetup : NetworkBehaviour
 {
-    private PlayerManager playerManager;
-    private void Awake()
-    {
-        playerManager = GetComponent<PlayerManager>();
-    }
-
+    public PlayerManager playerManager;
+    
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();

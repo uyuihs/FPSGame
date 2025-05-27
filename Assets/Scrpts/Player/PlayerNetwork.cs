@@ -5,16 +5,10 @@ using Unity.Netcode;
 using UnityEngine.UIElements.Experimental;
 public class PlayerNetwork : NetworkBehaviour
 {
-    private PlayerManager playerManager;
+    public PlayerManager playerManager;
     private NetworkVariable<Vector2> moveInput =
         new NetworkVariable<Vector2>(
             Vector2.zero,
-            NetworkVariableReadPermission.Everyone,
-            NetworkVariableWritePermission.Owner);
-
-    private NetworkVariable<Quaternion> cameraRotation =
-        new NetworkVariable<Quaternion>(
-            Quaternion.identity,
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
@@ -24,10 +18,11 @@ public class PlayerNetwork : NetworkBehaviour
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner);
 
-    private void Awake()
-    {
-        playerManager = GetComponent<PlayerManager>();
-    }
+    private NetworkVariable<Quaternion> netRotation =
+    new NetworkVariable<Quaternion>(
+        Quaternion.identity,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
 
     public Vector2 MoveInput
     {
@@ -35,10 +30,10 @@ public class PlayerNetwork : NetworkBehaviour
         set { moveInput.Value = value; }
     }
 
-    public Quaternion CameraRotation
+    public Quaternion Rotation
     {
-        get { return cameraRotation.Value; }
-        set {cameraRotation.Value = value; }
+        get { return netRotation.Value; }
+        set {netRotation.Value = value; }
     }
 
     public Vector3 NetPosition
@@ -48,10 +43,9 @@ public class PlayerNetwork : NetworkBehaviour
     }
 
     
-    public void AsyncInput(Vector2 _moveInput, Quaternion _cameraRotation)
+    public void AsyncMoveInput(Vector2 _moveInput)
     {
         MoveInput = _moveInput;
-        CameraRotation = _cameraRotation;
     }
 
 

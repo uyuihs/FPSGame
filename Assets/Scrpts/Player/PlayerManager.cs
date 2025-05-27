@@ -9,6 +9,8 @@ public class PlayerManager : NetworkBehaviour
     public PlayerAnimator playerAnimator;
     public PlayerNetwork playerNetwork;
     public PlayerCamera playerCamera;
+    public PlayerSetup playerSetup;
+
 
     private void Awake()
     {
@@ -17,6 +19,15 @@ public class PlayerManager : NetworkBehaviour
         playerAnimator = GetComponent<PlayerAnimator>();
         playerNetwork = GetComponent<PlayerNetwork>();
         playerCamera = GetComponent<PlayerCamera>();
+        playerSetup = GetComponent<PlayerSetup>();
+
+        playerLocomotion.playerManager = this;
+        playerInput.playerManager = this;
+        playerAnimator.playerManager = this;
+        playerNetwork.playerManager = this;
+        playerCamera.playerManager = this;
+        playerSetup.playerManager = this;
+
     }
 
     private void Start()
@@ -29,17 +40,21 @@ public class PlayerManager : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        playerAnimator.HandleAllAnimator();
-        playerLocomotion.HandleAllLocomotion();
+
+
         //同步位置
         if (IsOwner)
         {
+            playerAnimator.HandleAllAnimator();
+            playerLocomotion.HandleAllLocomotion();
             playerNetwork.NetPosition = transform.position;
+            playerNetwork.Rotation = transform.rotation;
         }
         else
         {
             //非拥有者，更新位置和旋转
             transform.position = playerNetwork.NetPosition;
+            transform.rotation = playerNetwork.Rotation;
         }
 
     }
@@ -51,9 +66,7 @@ public class PlayerManager : NetworkBehaviour
             playerInput.HandleAllInput();
 
             //同步网络变量
-            playerNetwork.AsyncInput(
-                playerInput.MoveInput,
-                playerInput.CameraInput);
+            playerNetwork.AsyncMoveInput(playerInput.MoveInput);
 
         }
 
