@@ -18,10 +18,13 @@ public class PlayerSetup : NetworkBehaviour
         {
             playerManager.playerCamera.SetCineCamera();
             float position = Random.Range(1, 5);
+            transform.position = new Vector3(position, 0, position);
+            playerManager.playerNetwork.NetPosition = transform.position;
         }
         else
         {
             playerManager.playerInput.enabled = false;
+            transform.position = playerManager.playerNetwork.NetPosition;
         }
     }
 }

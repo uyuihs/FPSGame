@@ -34,7 +34,12 @@ public class PlayerManager : NetworkBehaviour
         //同步位置
         if (IsOwner)
         {
-
+            playerNetwork.NetPosition = transform.position;
+        }
+        else
+        {
+            //非拥有者，更新位置和旋转
+            transform.position = playerNetwork.NetPosition;
         }
 
     }
